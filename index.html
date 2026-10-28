@@ -318,7 +318,12 @@ const seven = add_two(5)</code></pre>
 
   <h3>Trailing blocks</h3>
   <p>The last callback of a function is written as a block after the call. One simple operand can be passed without parentheses.</p>
-<pre><code>const doubled = apply(4) |n| { return n * 2 }       // the block fills the last parameter
+<pre><code>const apply = function(i32 value, function(i32) i32 transform) i32 {
+    return transform(value)                          // the last parameter is a callback
+}
+const double = function(i32 n) i32 { return n * 2 }
+
+const doubled = apply(4) |n| { return n * 2 }        // the block fills the last parameter
 const ten = double 5                                 // one simple operand, no parentheses</code></pre>
 
   <h3>Chains of blocks, built with structs</h3>
