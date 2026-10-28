@@ -1,0 +1,420 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Raga</title>
+<meta name="description" content="Raga is a small, explicit language built from one shape. One raga, every rendition.">
+<link rel="icon" href="logo.svg" type="image/svg+xml">
+<style>
+  :root {
+    --bg: #ffffff; --fg: #111111; --muted: #5c5c5c; --line: #d9d9d9; --panel: #f5f5f5; --inv-bg: #111111; --inv-fg: #ffffff;
+    --mono: ui-monospace, "SF Mono", "JetBrains Mono", "Cascadia Code", Menlo, Consolas, monospace;
+    --sans: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #000000; --fg: #ededed; --muted: #9a9a9a; --line: #2a2a2a; --panel: #0e0e0e; --inv-bg: #ededed; --inv-fg: #000000;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #000000; --fg: #ededed; --muted: #9a9a9a; --line: #2a2a2a; --panel: #0e0e0e; --inv-bg: #ededed; --inv-fg: #000000;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { margin: 0; background: var(--bg); color: var(--fg); font-family: var(--sans); font-size: 17px; line-height: 1.65; -webkit-font-smoothing: antialiased; }
+  a { color: inherit; text-decoration-color: var(--muted); text-underline-offset: 3px; }
+  a:hover { text-decoration-color: var(--fg); }
+  .wrap { max-width: 920px; margin: 0 auto; padding: 0 16px; }
+
+  header.top { border-bottom: 1px solid var(--line); position: sticky; top: 0; background: var(--bg); z-index: 5; }
+  header.top .wrap { display: flex; align-items: center; justify-content: space-between; height: 56px; gap: 16px; }
+  .brand { display: flex; align-items: center; gap: 10px; font-family: var(--mono); font-weight: 700; text-decoration: none; letter-spacing: .02em; }
+  .brand svg { width: 26px; height: 26px; display: block; }
+  nav { display: flex; gap: 20px; align-items: center; font-size: 15px; flex-wrap: wrap; justify-content: flex-end; }
+  nav a { text-decoration: none; color: var(--muted); }
+  nav a:hover { color: var(--fg); }
+  nav button { font: inherit; font-size: 13px; font-family: var(--mono); background: none; color: var(--muted); border: 1px solid var(--line); border-radius: 4px; padding: 2px 8px; cursor: pointer; }
+  nav button:hover { color: var(--fg); border-color: var(--fg); }
+
+  .hero { padding: 88px 0 56px; border-bottom: 1px solid var(--line); }
+  .hero svg { width: 64px; height: 64px; display: block; margin-bottom: 28px; }
+  .hero h1 { font-family: var(--mono); font-size: clamp(40px, 8vw, 72px); line-height: 1.05; margin: 0 0 12px; letter-spacing: -.02em; }
+  .hero .tag { font-family: var(--mono); color: var(--muted); font-size: 18px; margin: 0 0 28px; }
+  .hero p.lead { font-size: 20px; max-width: 680px; margin: 0 0 32px; }
+  .buttons { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 40px; }
+  .btn { display: inline-block; padding: 10px 18px; border: 1px solid var(--fg); border-radius: 4px; text-decoration: none; font-family: var(--mono); font-size: 15px; }
+  .btn.solid { background: var(--inv-bg); color: var(--inv-fg); }
+  .btn:hover { opacity: .8; }
+
+  section { padding: 64px 0; border-bottom: 1px solid var(--line); }
+  section:last-of-type { border-bottom: 0; }
+  h2 { font-family: var(--mono); font-size: 26px; margin: 0 0 8px; letter-spacing: -.01em; }
+  h2 .n { color: var(--muted); font-weight: 400; margin-right: 10px; }
+  h3 { font-family: var(--mono); font-size: 17px; margin: 36px 0 6px; }
+  p { margin: 0 0 16px; max-width: 720px; }
+  .sub { color: var(--muted); max-width: 720px; margin-bottom: 28px; }
+  code { font-family: var(--mono); font-size: .9em; background: var(--panel); border: 1px solid var(--line); border-radius: 3px; padding: 1px 5px; }
+  pre { font-family: var(--mono); font-size: 14px; line-height: 1.6; background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 16px 18px; overflow-x: auto; margin: 0 0 20px; tab-size: 4; }
+  pre code { background: none; border: 0; padding: 0; font-size: inherit; }
+  pre.shape { font-size: 16px; padding: 22px; background: var(--inv-bg); color: var(--inv-fg); border-color: var(--inv-bg); }
+  .k { font-weight: 700; }
+  .c { color: var(--muted); font-style: italic; }
+  .s { text-decoration: underline; text-decoration-color: var(--muted); text-underline-offset: 3px; text-decoration-thickness: 1px; }
+  .t { font-weight: 700; font-style: italic; }
+  pre.shape .c { color: inherit; opacity: .6; }
+
+  table { border-collapse: collapse; width: 100%; font-size: 15px; margin: 8px 0 24px; }
+  th, td { text-align: left; vertical-align: top; padding: 10px 12px; border-top: 1px solid var(--line); }
+  th { font-family: var(--mono); font-size: 13px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); border-top: 0; border-bottom: 1px solid var(--fg); font-weight: 600; }
+  td:first-child { font-family: var(--mono); white-space: nowrap; }
+
+  .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0; border: 1px solid var(--line); border-radius: 6px; overflow: hidden; }
+  .grid > div { padding: 22px; border-right: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+  .grid > div:nth-child(2n) { border-right: 0; }
+  .grid > div:nth-last-child(-n+2) { border-bottom: 0; }
+  .grid h3 { margin: 0 0 6px; }
+  .grid p { margin: 0; font-size: 15px; color: var(--muted); }
+  .grid p code { color: var(--fg); }
+
+  .tpl { list-style: none; margin: 0; padding: 0; border: 1px solid var(--line); border-radius: 6px; }
+  .tpl li { display: flex; gap: 16px; padding: 12px 16px; border-top: 1px solid var(--line); align-items: baseline; }
+  .tpl li:first-child { border-top: 0; }
+  .tpl a { font-family: var(--mono); font-size: 14px; min-width: 250px; flex: none; }
+  .tpl span { color: var(--muted); font-size: 15px; }
+
+  .nots { columns: 2; column-gap: 32px; max-width: 720px; padding-left: 20px; margin: 0 0 16px; }
+  .nots li { margin-bottom: 6px; break-inside: avoid; }
+
+  footer { border-top: 1px solid var(--line); padding: 32px 0 48px; color: var(--muted); font-size: 14px; font-family: var(--mono); }
+  footer .wrap { display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+
+  @media (max-width: 720px) {
+    .grid { grid-template-columns: 1fr; }
+    .grid > div { border-right: 0 !important; }
+    .grid > div:nth-last-child(2) { border-bottom: 1px solid var(--line); }
+    .nots { columns: 1; }
+    .tpl li { flex-direction: column; gap: 2px; }
+    .tpl a { min-width: 0; }
+    .hero { padding: 56px 0 40px; }
+    section { padding: 48px 0; }
+    nav .hide-s { display: none; }
+    nav { gap: 12px; flex-wrap: nowrap; }
+    td:first-child { white-space: normal; }
+    th, td { padding: 8px 8px; }
+    pre { font-size: 13px; }
+  }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="#top" aria-label="Raga">
+      <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" aria-hidden="true">
+        <path d="M4 9c4-6 8-6 12 0s8 6 12 0"/><path d="M4 16c4-6 8-6 12 0s8 6 12 0"/><path d="M4 23c4-6 8-6 12 0s8 6 12 0"/>
+      </svg>
+      raga
+    </a>
+    <nav>
+      <a href="#shape" class="hide-s">The shape</a>
+      <a href="#philosophy" class="hide-s">Philosophy</a>
+      <a href="#design" class="hide-s">Design</a>
+      <a href="#templates">Templates</a>
+      <a href="https://github.com/raga-lang/raga" class="hide-s">GitHub</a>
+      <button id="theme" type="button" aria-label="Switch between light and dark">light / dark</button>
+    </nav>
+  </div>
+</header>
+
+<main id="top">
+
+<div class="wrap">
+  <div class="hero">
+    <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" aria-label="Raga logo" role="img">
+      <path d="M4 9c4-6 8-6 12 0s8 6 12 0"/><path d="M4 16c4-6 8-6 12 0s8 6 12 0"/><path d="M4 23c4-6 8-6 12 0s8 6 12 0"/>
+    </svg>
+    <h1>Raga</h1>
+    <p class="tag">// one raga. every rendition.</p>
+    <p class="lead">Raga is a small, explicit language built from <strong>one shape</strong>. A variable, a function, a type, a class, a loop and a call with a block are all the same sentence with different words in it.</p>
+    <div class="buttons">
+      <a class="btn solid" href="https://github.com/raga-lang/raga/tree/main/templates">Read the templates</a>
+      <a class="btn" href="#shape">See the shape</a>
+      <a class="btn" href="https://github.com/raga-lang/raga">Source</a>
+    </div>
+<pre class="shape"><code>[[attributes]]
+[ const | let | Type ]  name  =  ( head [(args)] [|params|] [Type] [{ body }] )+</code></pre>
+    <p class="sub" style="margin:0">If you can read that line, you can read Raga.</p>
+  </div>
+</div>
+
+<section id="shape">
+<div class="wrap">
+  <h2><span class="n">01</span>The one shape</h2>
+  <p class="sub">Every declaration has the same parts, in the same order. Learn the parts once and the whole language reads the same way.</p>
+  <table>
+    <thead><tr><th>Part</th><th>Meaning</th></tr></thead>
+    <tbody>
+      <tr><td>[attributes]</td><td>Facts about the declaration, written on the line above it. Optional.</td></tr>
+      <tr><td>const / let / Type</td><td>How the name is bound. Exactly one of the three, never a type together with <code>const</code> or <code>let</code>. <code>const</code> cannot be rebound, <code>let</code> can, a type first picks the type: <code>u8 level = 5</code>.</td></tr>
+      <tr><td>name</td><td>What you call it.</td></tr>
+      <tr><td>=</td><td>Binds the name to what follows.</td></tr>
+      <tr><td>head</td><td>What is being made or done: a value, a type name, <code>function</code>, <code>method</code>, <code>struct</code>, <code>enum</code>, <code>union</code>, <code>class</code>, <code>interface</code>, <code>trait</code>, <code>attribute</code>, <code>get</code>, or a call.</td></tr>
+      <tr><td>(args)</td><td>The <em>values</em> that go in: parameters of a function, arguments of a creation, the condition of an <code>if</code>.</td></tr>
+      <tr><td>|params|</td><td>The <em>names</em> that the head hands to its block: <code>for (items) |item| { }</code>, <code>catch |e| { }</code>.</td></tr>
+      <tr><td>Type</td><td>The type of the result.</td></tr>
+      <tr><td>{ body }</td><td>The code, or the members.</td></tr>
+      <tr><td>( … )+</td><td>The <strong>chain</strong>: the same parts again, with a head of its own, on the line of the closing <code>}</code>.</td></tr>
+    </tbody>
+  </table>
+
+  <h3>The same shape, in different clothes</h3>
+<pre><code>const limit = 100                                  // a value
+u8 level = 255                                     // a value, with its type chosen first
+const area = function(f64 radius) f64 {            // a function
+    return 3.14159 * radius * radius
+}
+const Point = struct { f64 x; f64 y }              // a type
+const Color = enum { const Red = 0; const Green = 1; const Blue = 2 }   // a type
+const route = attribute(String path)               // an attribute</code></pre>
+
+  <h3>Without a name, it is a statement</h3>
+  <p>A condition, a loop and a call with a block are the same line without the binding: <code>head (args) |params| { body }</code>, repeated as often as needed.</p>
+<pre><code>if (temperature &gt; 30) {
+    weather = "hot"
+} elif (temperature &gt; 20) {
+    weather = "warm"
+} else {
+    weather = "cold"
+}
+
+try {
+    check_age(200)
+} catch |e| {                                      // the next clause starts on the line of the }
+    print(e.message)
+} finally {
+    cleanup()
+}</code></pre>
+</div>
+</section>
+
+<section id="philosophy">
+<div class="wrap">
+  <h2><span class="n">02</span>Philosophy</h2>
+  <p class="sub">Raga is small on purpose. Each idea follows from the shape, and nothing is done behind your back.</p>
+  <div class="grid">
+    <div>
+      <h3>Everything is a binding</h3>
+      <p>A function, a type and an attribute are values bound to a name, declared like any variable: <code>const area = function(…)</code>, <code>const Point = struct { }</code>. There are no special declaration forms to learn.</p>
+    </div>
+    <div>
+      <h3>One bracket, one meaning</h3>
+      <p><code>( )</code> values, <code>&lt; &gt;</code> types, <code>{ }</code> a body or the members, <code>| |</code> names handed to a block, <code>[ ]</code> attributes on the line above a declaration.</p>
+    </div>
+    <div>
+      <h3>Nothing is hidden</h3>
+      <p>No implicit conversion, no hidden return, no hidden <code>this</code>, no null, no overloading of plain functions. <code>return</code> is always written. A name must be declared above its use.</p>
+    </div>
+    <div>
+      <h3>The name tells the kind</h3>
+      <p>A primitive (<code>i32</code>, <code>f64</code>, <code>bool</code>, lowercase) is a plain value that is copied. Everything else (<code>String</code>, <code>List</code>, every struct and class, Capitalized) is held by reference. <code>const</code> protects the name, not the value.</p>
+    </div>
+    <div>
+      <h3>Failure is part of the type</h3>
+      <p>A call that can fail returns <code>Optional&lt;T&gt;</code> or <code>Result&lt;T, E&gt;</code> and is read with <code>match</code>. What should never happen is thrown with <code>throw(Error(…))</code> and handled with <code>try</code>.</p>
+    </div>
+    <div>
+      <h3>Memory is counted, not collected</h3>
+      <p>A non-primitive value is freed the moment nothing refers to it. <code>Weak&lt;T&gt;</code> breaks cycles. Pointers and <code>alloc</code> exist for the rare case that needs manual memory.</p>
+    </div>
+    <div>
+      <h3>Facts go above the declaration</h3>
+      <p>An attribute is written in <code>[ ]</code> on the line above. <code>[page("/")]</code> is data your code can read, <code>[method(Ownership.Static)]</code> changes what a method is. Modifiers are members of enums, not reserved words.</p>
+    </div>
+    <div>
+      <h3>One file, one module</h3>
+      <p><code>export(a, b)</code> ends a file and <code>import("./path")</code> reads another. There is no main function: the file you run goes from the first line to the last.</p>
+    </div>
+  </div>
+
+  <h3>Conventions</h3>
+  <table>
+    <tbody>
+      <tr><td>Types, enum members, variants</td><td><code>Capitalized</code></td></tr>
+      <tr><td>Variables, parameters, fields, functions, attributes</td><td><code>lower_snake_case</code></td></tr>
+      <tr><td>Methods and fields of a class, interface or trait</td><td><code>lowerCamelCase</code></td></tr>
+      <tr><td>Layout</td><td>A clause starts on the line of the <code>}</code> before it. <code>match</code> and <code>switch</code> hold one <code>case</code> per line.</td></tr>
+    </tbody>
+  </table>
+</div>
+</section>
+
+<section id="design">
+<div class="wrap">
+  <h2><span class="n">03</span>Language design</h2>
+  <p class="sub">The ideas that make the shape grow, each shown in a few lines.</p>
+
+  <h3>Types in angle brackets, values in parentheses</h3>
+  <p><code>List&lt;i32&gt;</code> and <code>Map&lt;String, i32&gt;</code> name a type. <code>area(2.0)</code>, <code>Point(x = 1.0, y = 2.0)</code> and <code>u8(300)</code> take values. A cast is a type name called on a value. Collections have literals that read like their constructors: <code>"text"</code>, <code>{1, 2, 3}</code> (Array), <code>[1, 2, 3]</code> (List), <code>(1, 2.5)</code> (Tuple).</p>
+
+  <h3>Functions are values, and closures</h3>
+  <p>A function can be declared anywhere, uses the names around it, and can return another function. What a closure uses moves to the heap and lives as long as the function does.</p>
+<pre><code>const make_adder = function(i32 step) function(i32) i32 {
+    const add = function(i32 n) i32 { return n + step }
+    return add
+}
+const add_two = make_adder(2)
+const seven = add_two(5)</code></pre>
+
+  <h3>Trailing blocks</h3>
+  <p>The last callback of a function is written as a block after the call. One simple operand can be passed without parentheses.</p>
+<pre><code>const doubled = apply(4) |n| { return n * 2 }       // the block fills the last parameter
+const ten = double 5                                 // one simple operand, no parentheses</code></pre>
+
+  <h3>Chains of blocks, built with structs</h3>
+  <p>For your own code a function takes one trailing block, so a chain of blocks is built with structs: each step returns a struct that has only the methods which may come next. The return type of a step decides which clause can follow.</p>
+<pre><code>when(a &gt; 3) {
+    print("big")
+} or_when(a &gt; 1) {
+    print("small")
+} otherwise {
+    print("none")
+}</code></pre>
+
+  <h3>Classes, with the same shape inside</h3>
+  <p>A field is a variable, a method is a binding whose head is <code>method</code>, and overloads and accessors are chains on the closing brace.</p>
+<pre><code>[class(Inheritance.Final)]
+const Student = class {
+    String name = ""
+    const greet = method() String {
+        return this.name
+    } method(String greeting) String {             // an overload is a chain
+        return String.join(greeting, this.name)
+    }
+    const marks = get { return this._marks } set |value| { this._marks = value }
+} extends(People) implements(ISpeak)</code></pre>
+
+  <h3>Failure is in the type</h3>
+<pre><code>const half = function(i32 n) Result&lt;i32, String&gt; {
+    if (n % 2 != 0) { return Result.Err("odd") }
+    return Result.Ok(n / 2)
+}
+match (half(10)) {
+    case (Ok)  |ok|  { print(ok.value) }
+    case (Err) |bad| { print(bad.reason) }
+}</code></pre>
+
+  <h3>Attributes, in three patterns</h3>
+  <p>You declare your own attributes with the head <code>attribute</code>. They build on each other: metadata that code can read, a hook that runs once while building, and a hook that runs on every call. The block names everything it uses between its <code>| |</code>, so nothing arrives under a hidden name.</p>
+<pre><code>const metadata = attribute(String name)                               // 1. metadata only
+
+const routes = Map&lt;String, BindingInfo&gt;()
+const route = attribute(String path) |target, path| {                  // 2. a build hook
+    routes.set(path, target)
+} call |target, args, next| {                                          // 3. a call hook
+    print(String.join("calling ", target.name))
+    return next(args)
+}
+
+[route("users/")]
+const users = function(i32 first, i32 count) String { return "list" }</code></pre>
+
+  <h3>Build-time evaluation and reflection</h3>
+  <p><code>compile(expression)</code> runs ordinary code while the program is built and puts the result in the program as a constant. <code>reflect&lt;T&gt;()</code> describes a type as data, and <code>attributes_of</code> reads the attributes on a declaration.</p>
+<pre><code>const square = function(i32 n) i32 { return n * n }
+const sixty_four = compile(square(8))                // computed by the compiler
+
+const info = reflect&lt;Account&gt;()
+const field_count = info.fields.len()</code></pre>
+
+  <h3>Modules</h3>
+<pre><code>const shapes = import("./geometry/shapes")           // a file
+const check = import("test")                          // a library by name, resolved through raga.project and the libraries folder
+
+export(area, perimeter)                               // the last statement of a file</code></pre>
+
+  <h3>What Raga does not have</h3>
+  <ul class="nots">
+    <li>No null</li>
+    <li>Nothing to throw but an <code>Error</code></li>
+    <li>No implicit casts</li>
+    <li>No overloading of plain functions</li>
+    <li>No inheritance for structs</li>
+    <li>No multiple inheritance</li>
+    <li>No operator overloading, except with the <code>[operator]</code> attribute</li>
+    <li>No main function</li>
+  </ul>
+</div>
+</section>
+
+<section id="templates">
+<div class="wrap">
+  <h2><span class="n">04</span>Templates</h2>
+  <p class="sub">Start with <code>hello.raga</code> for the whole language on one page, then read the templates in order. Each one explains one area in full, and none uses a feature that a later one explains.</p>
+  <p><a class="btn solid" href="https://github.com/raga-lang/raga/tree/main/templates">Open the templates on GitHub</a></p>
+  <ul class="tpl" style="margin-top:24px">
+    <li><a href="https://github.com/raga-lang/raga/blob/main/hello.raga">hello.raga</a><span>the whole language in one page</span></li>
+    <li><a href="https://github.com/raga-lang/raga/blob/main/templates/01-basics.raga">01-basics</a><span>variables, primitives, literals, operators, scope</span></li>
+    <li><a href="https://github.com/raga-lang/raga/blob/main/templates/02-data-structures.raga">02-data-structures</a><span>Array, List, Tuple, Set, Map</span></li>
+    <li><a href="https://github.com/raga-lang/raga/blob/main/templates/03-control-flow.raga">03-control-flow</a><span>if, switch, match, loops</span></li>
+    <li><a href="https://github.com/raga-lang/raga/blob/main/templates/04-functions.raga">04-functions</a><span>parameters, callbacks, trailing blocks, closures</span></li>
+    <li><a href="https://github.com/raga-lang/raga/blob/main/templates/05-structs-enums-unions.raga">05-structs-enums-unions</a><span>your own types, Optional and Result, chaining</span></li>
+    <li><a href="https://github.com/raga-lang/raga/blob/main/templates/06-errors.raga">06-errors</a><span>Optional, Result, throw, try</span></li>
+    <li><a href="https://github.com/raga-lang/raga/blob/main/templates/07-classes-and-traits.raga">07-classes-and-traits</a><span>classes, inheritance, interfaces, traits</span></li>
+    <li><a href="https://github.com/raga-lang/raga/blob/main/templates/08-memory.raga">08-memory</a><span>sharing, copying, reference counting, pointers</span></li>
+    <li><a href="https://github.com/raga-lang/raga/blob/main/templates/09-attributes-and-reflection.raga">09-attributes-and-reflection</a><span>attributes, build and call hooks, reflection, compile</span></li>
+    <li><a href="https://github.com/raga-lang/raga/blob/main/templates/10-modules.raga">10-modules</a><span>import and export, libraries</span></li>
+    <li><a href="https://github.com/raga-lang/raga/blob/main/templates/11-standard-library.raga">11-standard-library</a><span>the built-in functions and methods</span></li>
+  </ul>
+
+  <h3>Editor support</h3>
+  <p>The VS Code extension gives syntax highlighting, completion, hover, go to definition, snippets and errors as you type, including the trailing block and the next clause of a chain. It is in <a href="https://github.com/raga-lang/vs-code-extension">vs-code-extension</a>.</p>
+</div>
+</section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>raga &mdash; one raga. every rendition.</span>
+    <span><a href="https://github.com/raga-lang/raga">GitHub</a></span>
+  </div>
+</footer>
+
+<script>
+(function () {
+  var KEYWORDS = /^(const|let|function|method|class|interface|trait|struct|union|enum|attribute|get|set|if|elif|else|for|while|loop|break|continue|return|try|catch|finally|throw|match|switch|case|import|export|extends|implements|use|call|true|false|this)$/;
+  var TYPES = /^([A-Z][A-Za-z0-9_]*|i8|i16|i32|i64|u8|u16|u32|u64|usize|f32|f64|bool|char|void)$/;
+  function esc(s) { return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+  function highlight(text) {
+    var out = '', i = 0, n = text.length, m;
+    while (i < n) {
+      var rest = text.slice(i);
+      if ((m = /^\/\/[^\n]*/.exec(rest))) { out += '<span class="c">' + esc(m[0]) + '</span>'; i += m[0].length; continue; }
+      if ((m = /^"(?:[^"\\\n]|\\.)*"/.exec(rest))) { out += '<span class="s">' + esc(m[0]) + '</span>'; i += m[0].length; continue; }
+      if ((m = /^[A-Za-z_][A-Za-z0-9_]*/.exec(rest))) {
+        var w = m[0];
+        out += KEYWORDS.test(w) ? '<span class="k">' + w + '</span>' : TYPES.test(w) ? '<span class="t">' + w + '</span>' : w;
+        i += w.length; continue;
+      }
+      out += esc(text[i]); i++;
+    }
+    return out;
+  }
+  document.querySelectorAll('pre:not(.shape) code').forEach(function (el) {
+    el.innerHTML = highlight(el.textContent);
+  });
+
+  var root = document.documentElement, btn = document.getElementById('theme');
+  try { var saved = localStorage.getItem('raga-theme'); if (saved) root.setAttribute('data-theme', saved); } catch (e) {}
+  btn.addEventListener('click', function () {
+    var dark = root.getAttribute('data-theme') === 'dark' ||
+      (!root.getAttribute('data-theme') && window.matchMedia('(prefers-color-scheme: dark)').matches);
+    var next = dark ? 'light' : 'dark';
+    root.setAttribute('data-theme', next);
+    try { localStorage.setItem('raga-theme', next); } catch (e) {}
+  });
+})();
+</script>
+</body>
+</html>
