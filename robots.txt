@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://raga-lang.github.io/sitemap.xml
