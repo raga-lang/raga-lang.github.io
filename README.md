@@ -15,6 +15,10 @@ are built for your own code: with structs. If you can read that line, you can re
 
 The language itself is in [`raga/`](../raga), the editor support in [`vs-code-extension/`](../vs-code-extension).
 
+> **Raga is a language design, not an implementation.** There is no compiler or interpreter. The templates are the specification,
+> written in Raga so that the philosophy can be read and checked for consistency. The editor extension checks the templates against
+> the design, it does not run them.
+
 ---
 
 ## 1. The one shape
