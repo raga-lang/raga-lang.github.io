@@ -317,17 +317,30 @@ const add_two = make_adder(2)
 const seven = add_two(5)</code></pre>
 
   <h3>Trailing blocks</h3>
-  <p>The last callback of a function is written as a block after the call. One simple operand can be passed without parentheses.</p>
+  <p>The last argument of a call can be written as a block after the parentheses. It is a function body for a callback, the values of an <code>Array</code>, or the <code>name = value</code> lines of a struct, and the type of the last parameter says which. One simple operand can be passed without parentheses.</p>
 <pre><code>const apply = function(i32 value, function(i32) i32 transform) i32 {
     return transform(value)                          // the last parameter is a callback
 }
 const double = function(i32 n) i32 { return n * 2 }
 
 const doubled = apply(4) |n| { return n * 2 }        // the block fills the last parameter
-const ten = double 5                                 // one simple operand, no parentheses</code></pre>
+const ten = double 5                                 // one simple operand, no parentheses
+
+const Column = struct {
+    String name
+    i32 size
+}
+const table = function(String name, Column column) { }
+const tally = function(String title, Array&lt;i32&gt; numbers) i32 { return numbers.len() }
+
+table("users") {                                     // the struct is the block...
+    name = "id"
+    size = 4
+}
+const total = tally("scores") { 4, 8, 15 }           // 3, the Array is the block</code></pre>
 
   <h3>Chains of blocks, built with structs</h3>
-  <p>For your own code a function takes one trailing block, so a chain of blocks is built with structs: each step returns a struct that has only the methods which may come next. The return type of a step decides which clause can follow.</p>
+  <p>For your own code a function takes one trailing block, for its last parameter, so a chain of blocks is built with structs: each step returns a struct that has only the methods which may come next. The return type of a step decides which clause can follow.</p>
 <pre><code>when(a &gt; 3) {
     print("big")
 } or_when(a &gt; 1) {

@@ -9,8 +9,9 @@ a class, a loop, a call with a block, is the same sentence with different words 
 ```
 
 The part in `( )+` is written once, or again and again: each repeat is one more clause of the chain. Every repeat takes the same parts as the first
-and starts on the line of the closing `}` before it. The `{ body }` after a call is its trailing block, which fills the last
-parameter of the function, so a repeat after a block is a method of the value the call gave back. That is how `try`-like shapes
+and starts on the line of the closing `}` before it. The `{ body }` after a call is its trailing block, which is the last
+argument of the call written in place: a function body for a callback, the values of an `Array`, or the `name = value` lines of a
+struct. A repeat after a block is a method of the value the call gave back. That is how `try`-like shapes
 are built for your own code: with structs. If you can read that line, you can read Raga. This page explains it, and the ideas that follow from it.
 
 The language itself is in [`raga/`](../raga), the editor support in [`vs-code-extension/`](../vs-code-extension).
@@ -90,7 +91,7 @@ one statement that has no head.
 A **chain** is how Raga grows. Every repeat after the first is a head too, so it takes the same parts as the first:
 `elif (b) { }`, `catch |e| { }`, `extends(People)`, `method(String lang) String { }`, `set |value| { }`. The repeats stay on the line of the
 closing `}` before them, so the chain reads as one sentence. `if`, `try`, `catch` and `finally` are keywords of the language.
-For your own code a function takes only one trailing block, for its last callback, so a chain of blocks is built with structs:
+For your own code a function takes only one trailing block, for its last parameter, so a chain of blocks is built with structs:
 each step returns a struct that has only the methods which may come next, so the return type of a step decides which repeat
 can follow. The same struct again repeats a clause, another struct moves on, and a struct with no methods ends the chain.
 
