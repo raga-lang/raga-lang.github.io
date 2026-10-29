@@ -16,9 +16,8 @@ are built for your own code: with structs. If you can read that line, you can re
 
 The language itself is in [`raga/`](../raga), the editor support in [`vs-code-extension/`](../vs-code-extension).
 
-> **Raga is a language design, not an implementation.** There is no compiler or interpreter. The templates are the specification,
-> written in Raga so that the philosophy can be read and checked for consistency. The editor extension checks the templates against
-> the design, it does not run them.
+The language is described by examples written in Raga itself, in the `templates/` folder: each one explains one area and can be
+read top to bottom. The compiler, `ragac`, checks a file, and the editor extension checks code while you type.
 
 ---
 
@@ -88,7 +87,9 @@ const doubled = apply(4) |n| { return n * 2 }      // your own function takes a 
 Inside expressions Raga uses the usual operators (`+ - * / == && ...`), and reassigning a name, `count = count + 1`, is the
 one statement that has no head.
 
-A **chain** is how Raga grows. Every repeat after the first is a head too, so it takes the same parts as the first:
+A **chain** is the usual chaining of calls. A call that returns a value is continued with a dot, `user().select().limit(1)`. When the last
+argument of a call is written as a block (a callback, an Array or a struct), a dot after the closing `}` would look strange, so the dot is
+left out and the next name follows the brace: `user { } select { } limit (1)`. This is how Raga grows. Every repeat after the first is a head too, so it takes the same parts as the first:
 `elif (b) { }`, `catch |e| { }`, `extends(People)`, `method(String lang) String { }`, `set |value| { }`. The repeats stay on the line of the
 closing `}` before them, so the chain reads as one sentence. `if`, `try`, `catch` and `finally` are keywords of the language.
 For your own code a function takes only one trailing block, for its last parameter, so a chain of blocks is built with structs:
@@ -159,7 +160,7 @@ const path = attributes_of(users, "route").get(0).arguments.get(0).as<String>().
 
 The block names everything it uses between its `| |`, so nothing arrives under a hidden name.
 
-**One file, one module.** `export(a, b)` ends a file, `const m = import("./path/to/file")` reads another. There is no
+**One file, one module.** `export { a, b }` ends a file, `const m = import("./path/to/file")` reads another. There is no
 main function: the code of the file you run goes from the first line to the last.
 
 ---

@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Raga: one pattern for every declaration</title>
 <meta name="description" content="Raga is a small, explicit language with one declaration pattern. Variables, functions, types, classes, loops and calls with a block all follow it. One raga, every rendition.">
-<meta name="keywords" content="Raga, programming language, language design, syntax, one binding pattern, attributes, closures, reflection">
+<meta name="keywords" content="Raga, programming language, compiler, syntax, one binding pattern, attributes, closures, reflection">
 <meta name="author" content="Raga">
 <meta name="robots" content="index, follow, max-image-preview:large">
 <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
@@ -168,7 +168,7 @@
     <nav>
       <a href="#shape" class="hide-s">The shape</a>
       <a href="#philosophy" class="hide-s">Philosophy</a>
-      <a href="#design" class="hide-s">Design</a>
+      <a href="#features" class="hide-s">Features</a>
       <a href="#templates">Templates</a>
       <a href="https://github.com/raga-lang/raga" class="hide-s">GitHub</a>
       <button id="theme" type="button" aria-label="Switch between light and dark">light / dark</button>
@@ -186,7 +186,7 @@
     <h1>Raga</h1>
     <p class="tag">// one raga. every rendition.</p>
     <p class="lead">Raga is a small, explicit language built from <strong>one shape</strong>. A variable, a function, a type, a class, a loop and a call with a block all follow one pattern.</p>
-    <p class="sub" style="margin-bottom:28px"><strong>A language design, not an implementation.</strong> There is no compiler here: the templates are the specification, written to keep one consistent philosophy.</p>
+    <p class="sub" style="margin-bottom:28px">The language is described by examples written in Raga itself. Start with the templates, they explain one area each, in order.</p>
     <div class="buttons">
       <a class="btn solid" href="https://github.com/raga-lang/raga/tree/main/templates">Read the templates</a>
       <a class="btn" href="#shape">See the shape</a>
@@ -283,7 +283,7 @@ try {
     </div>
     <div>
       <h3>One file, one module</h3>
-      <p><code>export(a, b)</code> ends a file and <code>import("./path")</code> reads another. There is no main function: the file you run goes from the first line to the last.</p>
+      <p><code>export { a, b }</code> ends a file and <code>import("./path")</code> reads another. There is no main function: the file you run goes from the first line to the last.</p>
     </div>
   </div>
 
@@ -299,10 +299,10 @@ try {
 </div>
 </section>
 
-<section id="design">
+<section id="features">
 <div class="wrap">
-  <h2><span class="n">03</span>Language design</h2>
-  <p class="sub">The ideas that make the shape grow, each shown in a few lines.</p>
+  <h2><span class="n">03</span>Language features</h2>
+  <p class="sub">The ideas that follow from the shape, each shown in a few lines.</p>
 
   <h3>Types in angle brackets, values in parentheses</h3>
   <p><code>List&lt;i32&gt;</code> and <code>Map&lt;String, i32&gt;</code> name a type. <code>area(2.0)</code>, <code>Point(x = 1.0, y = 2.0)</code> and <code>u8(300)</code> take values. A cast is a type name called on a value. Collections have literals that read like their constructors: <code>"text"</code>, <code>{1, 2, 3}</code> (Array), <code>[1, 2, 3]</code> (List), <code>(1, 2.5)</code> (Tuple).</p>
@@ -340,6 +340,7 @@ table("users") {                                     // the struct is the block.
 const total = tally("scores") { 4, 8, 15 }           // 3, the Array is the block</code></pre>
 
   <h3>Chains of blocks, built with structs</h3>
+  <p>Calls that return values are chained with a dot, <code>user().select().limit(1)</code>. When the last argument of a call is written as a block (a callback, an Array or a struct), a dot after the closing brace would look strange, so the dot is left out and the next name follows the brace: <code>user { } select { } limit (1)</code>.</p>
   <p>For your own code a function takes one trailing block, for its last parameter, so a chain of blocks is built with structs: each step returns a struct that has only the methods which may come next. The return type of a step decides which clause can follow.</p>
 <pre><code>when(a &gt; 3) {
     print("big")
@@ -399,7 +400,7 @@ const field_count = info.fields.len()</code></pre>
 <pre><code>const shapes = import("./geometry/shapes")           // a file
 const check = import("test")                          // a library by name, resolved through raga.project and the libraries folder
 
-export(area, perimeter)                               // the last statement of a file</code></pre>
+export { area, perimeter }                           // the last statement of a file</code></pre>
 
   <h3>What Raga does not have</h3>
   <ul class="nots">
@@ -444,7 +445,7 @@ export(area, perimeter)                               // the last statement of a
 
 <footer>
   <div class="wrap">
-    <span>raga &mdash; a language design. one raga. every rendition.</span>
+    <span>raga &mdash; one raga. every rendition.</span>
     <span><a href="https://github.com/raga-lang/raga">GitHub</a></span>
   </div>
 </footer>
