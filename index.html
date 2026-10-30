@@ -267,7 +267,7 @@ try {
     </div>
     <div>
       <h3>The name tells the kind</h3>
-      <p>A primitive (<code>i32</code>, <code>f64</code>, <code>bool</code>, lowercase) is a plain value that is copied. Everything else (<code>String</code>, <code>List</code>, every struct and class, Capitalized) is held by reference. <code>const</code> protects the name, not the value.</p>
+      <p>A primitive (<code>i32</code>, <code>f64</code>, <code>bool</code>, lowercase) is a plain value that is copied. Everything else (<code>String</code>, <code>List</code>, <code>Function</code>, every struct and class, Capitalized) is held by reference. <code>const</code> protects the name, not the value.</p>
     </div>
     <div>
       <h3>Failure is part of the type</h3>
@@ -309,7 +309,7 @@ try {
 
   <h3>Functions are values, and closures</h3>
   <p>A function can be declared anywhere, uses the names around it, and can return another function. What a closure uses moves to the heap and lives as long as the function does.</p>
-<pre><code>const make_adder = function(i32 step) function(i32) i32 {
+<pre><code>const make_adder = function(i32 step) Function&lt;[i32], i32&gt; {
     const add = function(i32 n) i32 { return(n + step) }
     return(add)
 }
@@ -318,7 +318,7 @@ const seven = add_two(5)</code></pre>
 
   <h3>Trailing blocks</h3>
   <p>The last argument of a call can be written as a block after the parentheses. It is a function body for a callback, the values of an <code>Array</code>, or the <code>name = value</code> lines of a struct, and the type of the last parameter says which. When the block is the only argument, the parentheses are left out. A name without parentheses is the function itself, never a call: <code>double</code> is the function, <code>double(5)</code> calls it.</p>
-<pre><code>const apply = function(i32 value, function(i32) i32 transform) i32 {
+<pre><code>const apply = function(i32 value, Function&lt;[i32], i32&gt; transform) i32 {
     return(transform(value))                          // the last parameter is a callback
 }
 const double = function(i32 n) i32 { return(n * 2) }

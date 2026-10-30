@@ -127,7 +127,7 @@ around it (a closure): what it uses moves to the heap and lives as long as the f
 above its use. A struct is created by naming its fields, and a field with a default can be left out.
 
 **Two kinds of values, and the name tells which.** A *primitive* (`i32`, `f64`, `bool`, `char`, `ptr<T>`, lowercase) is a
-plain value that is copied. Everything else is *non-primitive* (`String`, `List`, every struct and class, Capitalized):
+plain value that is copied. Everything else is *non-primitive* (`String`, `List`, `Function`, every struct and class, Capitalized):
 the name holds a reference, an assignment shares it, `==` asks whether two names refer to the very same value, and `clone`
 makes a copy. `const` protects the name, not the value.
 
