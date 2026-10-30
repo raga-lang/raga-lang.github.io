@@ -123,19 +123,21 @@ special declaration forms to learn.
 
 **Nothing is hidden.** There is no implicit conversion, no hidden return, no hidden `this`, no null, no overloading of
 functions (methods can be overloaded). A function can be declared inside another function and then uses the names
-around it (a closure): what it uses moves to the heap and lives as long as the function does. A function can return a function. `return` is a call, `return(value)` or `return()`, always written, and belongs to functions. A name must be declared
+around it (a closure): it uses those variables themselves, so it cannot be returned out of the function that owns them. A function can be passed to a function. `return` is a call, `return(value)` or `return()`, always written, and belongs to functions. A name must be declared
 above its use. A struct is created by naming its fields, and a field with a default can be left out.
 
-**Two kinds of values, and the name tells which.** A *primitive* (`i32`, `f64`, `bool`, `char`, `ptr<T>`, lowercase) is a
-plain value that is copied. Everything else is *non-primitive* (`String`, `List`, `Function`, every struct and class, Capitalized):
-the name holds a reference, an assignment shares it, `==` asks whether two names refer to the very same value, and `clone`
-makes a copy. `const` protects the name, not the value.
+**Every value is owned by its name, and the name tells which kind.** A *primitive* (`i32`, `f64`, `bool`, `char`, `ptr<T>`,
+lowercase) is a plain value of fixed size. Everything else is *non-primitive* (`String`, `List`, `Function`, every struct and
+class, Capitalized): it can own storage that grows. Both are values: an assignment copies, with everything inside, so there is
+no `clone`. `==` works on primitives, `String` (by its text) and enum members, and on nothing else unless you declare it.
+`const` protects the whole value, not just the name. To share a value, point at it: `addr(x)` gives a `ptr<T>` and `p.*` is
+the value.
 
 **Failure is part of the type.** A call that can fail normally returns `Optional<T>` or `Result<T, E>` and is read with
 `match`. Something that should never happen is thrown with `throw(Error(...))` and handled with `try` and `catch`.
 
-**Memory is counted, not collected.** A non-primitive value is freed the moment nothing refers to it. `Weak<T>` breaks
-cycles. Pointers and `alloc` exist for the rare case that needs manual memory.
+**Memory is scoped, not counted or collected.** A value is freed when the block of its name ends, so there are no cycles and no
+pauses. A pointer does not keep anything alive. `alloc`, `free` and `sizeof` exist for the rare case that needs manual memory.
 
 **Facts about a declaration go above it.** An attribute is written in `[ ]` on the line above a declaration, and it is the
 first line of the same shape. `[page("/")]` is data that your code can read, `[method(Ownership.Static, Visibility.Private)]`
@@ -201,7 +203,7 @@ feature that a later one explains.
 | [`05-structs-enums-unions`](../raga/templates/05-structs-enums-unions.raga) | your own types, `Optional` and `Result`, chaining |
 | [`06-errors`](../raga/templates/06-errors.raga) | `Optional`, `Result`, `throw`, `try` |
 | [`07-classes-and-traits`](../raga/templates/07-classes-and-traits.raga) | classes, inheritance, interfaces, traits |
-| [`08-memory`](../raga/templates/08-memory.raga) | sharing, copying, reference counting, pointers |
+| [`08-memory`](../raga/templates/08-memory.raga) | copying, pointers, ownership, manual memory |
 | [`09-attributes-and-reflection`](../raga/templates/09-attributes-and-reflection.raga) | attributes (metadata, build hooks, call hooks), reflection, `compile` |
 | [`10-modules`](../raga/templates/10-modules.raga) | `import` and `export` |
 | [`11-standard-library`](../raga/templates/11-standard-library.raga) | the built-in functions and methods |

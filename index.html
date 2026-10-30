@@ -267,15 +267,15 @@ try {
     </div>
     <div>
       <h3>The name tells the kind</h3>
-      <p>A primitive (<code>i32</code>, <code>f64</code>, <code>bool</code>, lowercase) is a plain value that is copied. Everything else (<code>String</code>, <code>List</code>, <code>Function</code>, every struct and class, Capitalized) is held by reference. <code>const</code> protects the name, not the value.</p>
+      <p>A primitive (<code>i32</code>, <code>f64</code>, <code>bool</code>, lowercase) is a plain value that is copied. Everything else (<code>String</code>, <code>List</code>, <code>Function</code>, every struct and class, Capitalized) is a value too: assignment copies it, with everything inside. There is no <code>clone</code>. To share, point at it with <code>addr(x)</code>. <code>const</code> protects the whole value.</p>
     </div>
     <div>
       <h3>Failure is part of the type</h3>
       <p>A call that can fail returns <code>Optional&lt;T&gt;</code> or <code>Result&lt;T, E&gt;</code> and is read with <code>match</code>. What should never happen is thrown with <code>throw(Error(…))</code> and handled with <code>try</code>.</p>
     </div>
     <div>
-      <h3>Memory is counted, not collected</h3>
-      <p>A non-primitive value is freed the moment nothing refers to it. <code>Weak&lt;T&gt;</code> breaks cycles. Pointers and <code>alloc</code> exist for the rare case that needs manual memory.</p>
+      <h3>Memory is scoped, not counted</h3>
+      <p>A value is freed when the block of its name ends, so there are no cycles and no pauses. A pointer, <code>p.*</code>, never keeps anything alive. <code>alloc</code> and <code>free</code> exist for the rare case that needs manual memory.</p>
     </div>
     <div>
       <h3>Facts go above the declaration</h3>
@@ -430,7 +430,7 @@ export { area, perimeter }                           // the last statement of a 
     <li><a href="https://github.com/raga-lang/raga/blob/main/templates/05-structs-enums-unions.raga">05-structs-enums-unions</a><span>your own types, Optional and Result, chaining</span></li>
     <li><a href="https://github.com/raga-lang/raga/blob/main/templates/06-errors.raga">06-errors</a><span>Optional, Result, throw, try</span></li>
     <li><a href="https://github.com/raga-lang/raga/blob/main/templates/07-classes-and-traits.raga">07-classes-and-traits</a><span>classes, inheritance, interfaces, traits</span></li>
-    <li><a href="https://github.com/raga-lang/raga/blob/main/templates/08-memory.raga">08-memory</a><span>sharing, copying, reference counting, pointers</span></li>
+    <li><a href="https://github.com/raga-lang/raga/blob/main/templates/08-memory.raga">08-memory</a><span>copying, pointers, ownership, manual memory</span></li>
     <li><a href="https://github.com/raga-lang/raga/blob/main/templates/09-attributes-and-reflection.raga">09-attributes-and-reflection</a><span>attributes, build and call hooks, reflection, compile</span></li>
     <li><a href="https://github.com/raga-lang/raga/blob/main/templates/10-modules.raga">10-modules</a><span>import and export, libraries</span></li>
     <li><a href="https://github.com/raga-lang/raga/blob/main/templates/11-standard-library.raga">11-standard-library</a><span>the built-in functions and methods</span></li>
