@@ -30,7 +30,7 @@ read top to bottom. The compiler, `ragac`, checks a file, and the editor extensi
 | `name` | what you call it | `limit`, `area`, `Point`, `Student` |
 | `=` | binds the name to what follows | every declaration has it, and a value |
 | `head` | **what is being made or done** | a value, a type name, `function`, `method`, `struct`, `enum`, `union`, `class`, `interface`, `trait`, `attribute`, `get`, or a call |
-| `(args)` | the **values** that go in, with optional defaults (`Type name = value`) | parameters of a function, arguments of a creation, the condition of an `if`. One simple operand can stand without parentheses: `double 5` |
+| `(args)` | the **values** that go in, with optional defaults (`Type name = value`) | parameters of a function, arguments of a creation, the condition of an `if`. A call always has parentheses, `double(5)`, `answer()`: a name without them is the function itself. The one exception is a block as the only argument, `run { }` |
 | `\|params\|` | the **names** that the head hands to its block | `for (items) \|item\| { }`, `catch \|e\| { }` |
 | `Type` | the type of the result | `function(f64 r) f64 { }` |
 | `{ body }` | the code or the members | the block |
@@ -42,7 +42,7 @@ The same shape, in different clothes:
 const limit = 100                                  // a value
 u8 level = 255                                     // a value, with its type chosen first
 const area = function(f64 radius) f64 {            // a function
-    return 3.14159 * radius * radius
+    return(3.14159 * radius * radius)
 }
 const Point = struct { f64 x; f64 y }              // a type
 const Color = enum { const Red = 0; const Green = 1; const Blue = 2 }   // a type
@@ -51,11 +51,11 @@ const route = attribute(String path)               // an attribute
 const Student = class {                            // a class, with a chain after the body
     String name = ""                               // a field is a variable
     const greet = method() String {                // a method is a binding whose head is method
-        return this.name
+        return(this.name)
     } method(String greeting) String {             // overloads are a chain on the closing brace
-        return String.join(greeting, this.name)
+        return(String.join(greeting, this.name))
     }
-    const marks = get { return this._marks } set |value| { this._marks = value }   // an accessor
+    const marks = get { return(this._marks) } set |value| { this._marks = value }   // an accessor
 } extends(People) implements(ISpeak)
 ```
 
@@ -81,7 +81,7 @@ try {
     cleanup()
 }
 
-const doubled = apply(4) |n| { return n * 2 }      // your own function takes a block the same way
+const doubled = apply(4) |n| { return(n * 2) }      // your own function takes a block the same way
 ```
 
 Inside expressions Raga uses the usual operators (`+ - * / == && ...`), and reassigning a name, `count = count + 1`, is the
@@ -123,7 +123,7 @@ special declaration forms to learn.
 
 **Nothing is hidden.** There is no implicit conversion, no hidden return, no hidden `this`, no null, no overloading of
 functions (methods can be overloaded). A function can be declared inside another function and then uses the names
-around it (a closure): what it uses moves to the heap and lives as long as the function does. A function can return a function. `return` is always written and belongs to functions. A name must be declared
+around it (a closure): what it uses moves to the heap and lives as long as the function does. A function can return a function. `return` is a call, `return(value)` or `return()`, always written, and belongs to functions. A name must be declared
 above its use. A struct is created by naming its fields, and a field with a default can be left out.
 
 **Two kinds of values, and the name tells which.** A *primitive* (`i32`, `f64`, `bool`, `char`, `ptr<T>`, lowercase) is a
@@ -150,11 +150,11 @@ const route = attribute(String path) |target, path| {                  // 2. a b
     routes.set(path, target)
 } call |target, args, next| {                                          // 3. a call hook: runs on every call
     print(String.join("calling ", target.name))
-    return next(args)
+    return(next(args))
 }
 
 [route("users/")]
-const users = function(i32 first, i32 count) String { return "list" }
+const users = function(i32 first, i32 count) String { return("list") }
 const path = attributes_of(users, "route").get(0).arguments.get(0).as<String>().unwrap()
 ```
 
